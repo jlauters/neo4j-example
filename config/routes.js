@@ -1,21 +1,52 @@
 module.exports = function(app, config) {
 
     // controllers - tbd
-    var home = require('../controllers/home')(app, config);
-    var data = require('../controllers/data')(app, config);
+    var home   = require('../controllers/home')(app, config);
+    var data   = require('../controllers/data')(app, config);
+    var people = require('../controllers/people')(app, config);
+    var orgs   = require('../controllers/organizations')(app, config);
+    var repos  = require('../controllers/repositories')(app, config);
 
     app.get('/', home.index);
 
     // file import
     app.get('/import/:fileurl', data.importdata);
 
-    // fork
-    app.get('/fork/:dataname', data.fork);
+    // People
+    app.get('/people/', people.list);   
+    app.get('/people/add', people.add);
+    app.get('/people/edit/:person_id', people.edit);
+    app.get('/people/delete/:person_id', people.deletePerson);
+    app.get('/people/get_repositories/:person_id', people.getRepositories);
+    app.get('/people/set_password/:person_id', people.setPassword);
 
-    // merge
-    app.get('/merge/:dataname1/:dataname2', data.merge);
+    // Organizations
+    app.get('/organizations/', orgs.list);
+    app.get('/organizations/add', orgs.add);
+    app.get('/organizations/edit/:org_id', orgs.edit);
+    app.get('/organizations/delete/:org_id', orgs.deleteOrg);
+    app.get('/organizations/get_repositories/:org_id', orgs.getRepositories);
+    app.get('/organizations/add_person/:org_id/:person_id', orgs.addPerson);
+    app.get('/organizations/remove_person/:org_id/:person_id', orgs.removePerson);
+    app.get('/organizations/get_people/:org_id', orgs.getPeople);
 
-    // browse data sets
-    app.get('/datasets', data.browse);
-   
-}
+    // Repositories
+    app.get('/repositories/', repos.list);
+    app.get('/repositories/add', repos.add);
+    app.get('/repositories/edit/:repo_id', repos.edit);
+    app.get('/repositories/delete/:repo_id', repos.deleteRepo);
+    app.get('/repositories/set_owner/:repo_id/:person_id', repos.setOwner);
+    app.get('/repositories/get_owner/:repo_id', repos.getOwner);
+    app.get('/repositories/get_info/:repo_id', repos.getInfo);
+    app.get('/repositories/add_collaborator/:repo_id/:person_id', repos.addCollaborator);
+    app.get('/repositories/remove_collaborator/:repo_id/:person_id', repos.removeCollaborator);
+    app.get('/repositories/add_follower/:repo_id/:person_id', repos.addFollower);
+    app.get('/repositories/remove_follower/:repo_id/:person_id', repos.removeFollower);
+    app.get('/repositories/add_data_node/:repo_id', repos.addDataNode);
+    app.get('/repositories/import_data/:repo_id', repos.importData);
+    app.get('/repositories/query/:repo_id/:query_string', repos.query);
+    app.get('/repositories/get_all_data/:repo_id', repos.getAllData);
+    app.get('/repositories/set_entry_point/:repo_id', repos.setEntryPoint); 
+    
+    
+} 
