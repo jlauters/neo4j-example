@@ -7,8 +7,23 @@ module.exports = function(app, config) {
 
     return {
         list: function(req, res, callback) {
-            res.write("List of People");
-            res.end();
+
+            neo_session.run(" MATCH (n:Person) RETURN n LIMIT 25").then( function(result) {
+                console.log(" Data Loaded! ");
+               
+                var people = Array();
+                for(idx in result.records) {
+                    name  = result.records[idx]._fields[0].properties.name;
+                    title = result.records[idx]._fields[0].properties.title;
+
+                    people.push({"name": name, "title": title}) 
+                }
+
+                // Dump result to browser as JSON
+                res.setHeader('Content-Type', 'application/json');
+                res.send( JSON.stringify(people, 0 ,4) );
+
+            });
         },
 
         add: function(req, res, callback) {
