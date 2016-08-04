@@ -13,10 +13,16 @@ module.exports = function(app, config) {
                
                 var people = Array();
                 for(idx in result.records) {
-                    name  = result.records[idx]._fields[0].properties.name;
-                    title = result.records[idx]._fields[0].properties.title;
+                
+                    // Omitting passwords 
+                    name            = result.records[idx]._fields[0].properties.name;
+                    user_location   = result.records[idx]._fields[0].properties.user_location;
+                    email           = result.records[idx]._fields[0].properties.email;
+                    url             = result.records[idx]._fields[0].properites.url;
+                    tagline         = result.records[idx]._fields[0].properties.tagline;
+                    preferences     = result.records[idx]._fields[0].properties.preferences;
 
-                    people.push({"name": name, "title": title}) 
+                    people.push({"name": name, "user_location": user_location, "email": email, "url": url, "tagline": tagline, "preferences": preferences}); 
                 }
 
                 // Dump result to browser as JSON

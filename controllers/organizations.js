@@ -7,8 +7,25 @@ module.exports = function(app, config) {
 
     return {
         list: function(req, res, callback) {
-            res.write("List of Organizations");
-            res.end();
+
+            neo_sesson.run(" MATCH (n:Organization) RETURN n LIMIT 25").then( function(result) {
+                console.log(" Data Loaded! ");
+
+                var organizations = Array();
+                for(idx in result.records) {
+
+                    name         = result.records[idx]._fields[0].properties.name;
+                    org_location = result.records[idx]._fields[0].properties.org_location;
+                    email        = result.records[idx]._fields[0].properties.email;
+                    url          = result.records[idx]._fields[0].properties.url;
+                    tagline      = result.records[idx]._fields[0].properties.tagline;
+
+                    organizations.push({"name": name, "org_location": org_location, "email": email, "url": url, "tagline": tagline});
+                }
+
+                res.setHeader('Content-Type', 'application/json');
+                res.send( JSON.stringify(organizations, 0, 4) );
+            });
         },
 
         add: function(req, res, callback) {

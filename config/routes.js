@@ -2,7 +2,7 @@ module.exports = function(app, config) {
 
     // controllers - tbd
     var home   = require('../controllers/home')(app, config);
-    var data   = require('../controllers/data')(app, config);
+    //var data   = require('../controllers/data')(app, config);
     var people = require('../controllers/people')(app, config);
     var orgs   = require('../controllers/organizations')(app, config);
     var repos  = require('../controllers/repositories')(app, config);
@@ -10,11 +10,11 @@ module.exports = function(app, config) {
     app.get('/', home.index);
 
     // file import
-    app.get('/import/:fileurl', data.importdata);
+    //app.get('/import/:fileurl', data.importdata);
 
     // People
-    app.get('/people/', people.list);   
-    app.get('/people/add', people.add);
+    app.get('/people', people.list);   
+    app.post('/people/add', people.add);
     app.get('/people/edit/:person_id', people.edit);
     app.get('/people/delete/:person_id', people.deletePerson);
     app.get('/people/get_repositories/:person_id', people.getRepositories);
@@ -22,7 +22,7 @@ module.exports = function(app, config) {
 
     // Organizations
     app.get('/organizations/', orgs.list);
-    app.get('/organizations/add', orgs.add);
+    app.post('/organizations/add', orgs.add);
     app.get('/organizations/edit/:org_id', orgs.edit);
     app.get('/organizations/delete/:org_id', orgs.deleteOrg);
     app.get('/organizations/get_repositories/:org_id', orgs.getRepositories);
@@ -32,7 +32,7 @@ module.exports = function(app, config) {
 
     // Repositories
     app.get('/repositories/', repos.list);
-    app.get('/repositories/add', repos.add);
+    app.post('/repositories/add', repos.add);
     app.get('/repositories/edit/:repo_id', repos.edit);
     app.get('/repositories/delete/:repo_id', repos.deleteRepo);
     app.get('/repositories/set_owner/:repo_id/:person_id', repos.setOwner);
