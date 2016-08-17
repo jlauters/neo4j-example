@@ -34,8 +34,8 @@ module.exports = function(app, config) {
     app.get('/repositories/', repos.list);
     app.post('/repositories/add', repos.add);
     app.get('/repositories/edit/:repo_id', repos.edit);
-    app.get('/repositories/delete/:repo_id', repos.deleteRepo);
-    app.get('/repositories/set_owner/:repo_id/:person_id', repos.setOwner);
+    app.post('/repositories/delete/:repo_id', repos.deleteRepo);
+    app.post('/repositories/set_owner/:repo_id/:person_id', repos.setOwner);
     app.get('/repositories/get_owner/:repo_id', repos.getOwner);
     app.get('/repositories/get_info/:repo_id', repos.getInfo);
     app.get('/repositories/add_collaborator/:repo_id/:person_id', repos.addCollaborator);

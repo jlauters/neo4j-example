@@ -1,12 +1,15 @@
 var neo4j = require('neo4j-driver').v1;
 var querystring = require('querystring');
 
+// Neo4j connection
 var driver = neo4j.driver("bolt://localhost", neo4j.auth.basic("neo4j", "redpill"));
 var neo_session = driver.session();
 
 module.exports = function(app, config) {
 
     return {
+
+        // Return list of repository nodes
         list: function(req, res, callback) {
 
             neo_session.run(" MATCH (n:Repository) RETURN n LIMIT 25").then( function(result) {
@@ -28,32 +31,23 @@ module.exports = function(app, config) {
             });
         },
 
+        // Add an ew repository node
         add: function(req, res, callback) {
     
-            console.log('request query: ');
-            console.log(req.query);
-
             var url    = querystring.escape( req.query.url );
             var name   = querystring.escape( req.query.name ).replace(/'/g, "\\'");
             var readme = querystring.escape( req.query.readme );
             var created_on = new Date().toString();
 
-            console.log("url: " + url);
-            console.log("name: " + name);
-            console.log("readme: " + readme);
-            console.log("created_on: " + created_on);
-
             neo_session.run(" CREATE (n:Repository {url: '" + url + "', name: '" + name + "', readme: '" + readme + "', created_on: '" + created_on + "'}) RETURN n")
             .then( function(result) {
-
-                console.log(" Repository Created! ");
-                console.log(result);
 
                 res.setHeader('Content-Type', 'application/json');
                 res.send( JSON.stringify(result, 0, 4) );
             });
         },
 
+        // Edit existing repository node
         edit: function(req, res, callback) {
        
             var repo_id = req.params.repo_id;
@@ -62,29 +56,46 @@ module.exports = function(app, config) {
             res.end();
         },
 
+        // Delete existing repository node
         deleteRepo: function(req, res, callback) {
 
             var repo_id = req.params.repo_id;
 
-            res.write("Delete Repository");
-            res.end();
+            neo_session.run(" MATCH (n:Repository) where ID(n)=" + repo_id + " OPTIONAL MATCH (n)-[r]-() DELETE r,n")
+            .then( function(result) {
+
+                res.setHeader('Content-Type', 'application/json');
+                res.send( JSON.stringify(result, 0, 4) );
+            });
         },
 
+        // Create owner relationship between Person node and Repository
         setOwner: function(req, res, callback) {
 
             var repo_id   = req.params.repo_id;
             var person_id = req.params.person_id;
 
-            res.write("Set Owner for Repository");
-            res.end();
+            neo_session.run(" MATCH (n:Repository) WHERE ID(n)=" + repo_id + " MATCH (p:Person) WHERE ID(p)=" + person_id +
+                " MERGE (p)-[:OWNS]->(n)")
+            .then( function(result) {
+            
+                res.setHeader('Content-Type', 'application/json');
+                res.send( JSON.stringify(result, 0, 4) );
+            });
         },
 
+        // Get Person node through Repository OWNS relationship
         getOwner: function(req, res, callback) {
         
             var repo_id = req.params.repo_id;
 
-            res.write("Get Owner for Repository");
-            res.end();
+            neo_session.run(" MATCH (n)<-[:OWNS]-(p) WHERE ID(n)=" + repo_id + " RETURN p")
+            .then( function(result) {
+            
+                res.setHeader('Content-Type', 'application/json');
+                res.send( JSON.stringify(result, 0, 4) );
+            })
+
         },
 
         getInfo: function(req, res, callback) {
@@ -95,13 +106,19 @@ module.exports = function(app, config) {
             res.end();
         },
 
+        // Add Collaborates With relationship between Person and Repository nodes
         addCollaborator: function(req, res, callback) {
   
             var repo_id   = req.params.repo_id;
             var person_id = req.params.person_id;
 
-            res.write("Add Collaborator to Repository");
-            res.end();
+            neo_session.run(" MATCH (n:Repository) WHERE ID(n)=" + repo_id + " MATCH (p:Person) WHERE ID(p)=" + person_id +
+                " MERGE (p)-[:COLLABORATES_WITH]->(n)")
+            .then( function(result) {
+            
+                res.setHeader('Content-Type', 'application/json');
+                res.send( JSON.stringify(result, 0, 4) );
+            });
         },
 
         removeCollaborator: function(req, res, callback) {
@@ -109,17 +126,22 @@ module.exports = function(app, config) {
             var repo_id   = req.params.repo_id;
             var person_id = req.params.person_id;
 
-            res.write("Remove Collaborator from Repository");
-            res.end();
         },
 
+        // Add Follows relationship between Person and Repository nodes
         addFollower: function(req, res, callback) {
 
             var repo_id   = req.params.repo_id;
             var person_id = req.params.person_id;
 
-            res.write("Add Follower to Repository");
-            res.end();
+            neo_session.run(" MATCH (n:Repository) WHERE ID(n)=" + repo_id + " MATCH (p:Person) WHERE ID(p)=" + person_id +
+                " MERGE (p)-[:FOLLOWS]->(n)")
+            .then( function(result) {
+
+                res.setHeader('Content-Type', 'application/json');
+                res.send( JSON.stringify(result, 0, 4) );
+            });
+
         },
 
         removeFollower: function(req, res, callback) {
