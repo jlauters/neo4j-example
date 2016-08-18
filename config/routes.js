@@ -38,10 +38,10 @@ module.exports = function(app, config) {
     app.post('/repositories/set_owner/:repo_id/:person_id', repos.setOwner);
     app.get('/repositories/get_owner/:repo_id', repos.getOwner);
     app.get('/repositories/get_info/:repo_id', repos.getInfo);
-    app.get('/repositories/add_collaborator/:repo_id/:person_id', repos.addCollaborator);
-    app.get('/repositories/remove_collaborator/:repo_id/:person_id', repos.removeCollaborator);
-    app.get('/repositories/add_follower/:repo_id/:person_id', repos.addFollower);
-    app.get('/repositories/remove_follower/:repo_id/:person_id', repos.removeFollower);
+    app.post('/repositories/add_collaborator/:repo_id/:person_id', repos.addCollaborator);
+    app.post('/repositories/remove_collaborator/:repo_id/:person_id', repos.removeCollaborator);
+    app.post('/repositories/add_follower/:repo_id/:person_id', repos.addFollower);
+    app.post('/repositories/remove_follower/:repo_id/:person_id', repos.removeFollower);
     app.get('/repositories/add_data_node/:repo_id', repos.addDataNode);
     app.get('/repositories/import_data/:repo_id', repos.importData);
     app.get('/repositories/query/:repo_id/:query_string', repos.query);

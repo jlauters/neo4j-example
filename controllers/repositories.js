@@ -98,6 +98,21 @@ module.exports = function(app, config) {
 
         },
 
+        // Remove OWNS relationship between Person and Repository nodes
+        removeOwner: function(req, res, callback) {
+
+            var repo_id   = req.params.repo_id;
+            var person_id = req.params.person_id;
+
+            neo_session.run(" START p=node(*) MATCH (p)-[rel:OWNS]->(n) WHERE ID(p)=" + person_id + " AND ID(n)=" + repo_id +
+                " DELETE rel")
+            .then( function(result) {
+
+                res.setHeader('Content-Type', 'application/json');
+                res.send( JSON.stringify(result, 0, 4) );
+            });
+        },
+
         getInfo: function(req, res, callback) {
 
             var repo_id = req.params.repo_id;
@@ -121,11 +136,19 @@ module.exports = function(app, config) {
             });
         },
 
+        // Remove Collaborates With relationship between Person and Repository nodes
         removeCollaborator: function(req, res, callback) {
 
             var repo_id   = req.params.repo_id;
             var person_id = req.params.person_id;
 
+            neo_session.run(" START p=node(*) MATCH (p)-[rel:COLLABORATES_WITH]->(n) WHERE ID(p)=" + person_id + " AND ID(n)=" + repo_id +
+                " DELETE rel")
+            .then( function(result) {
+
+                res.setHeader('Content-Type', 'application/json');
+                res.send( JSON.stringify(result, 0, 4) );
+            });
         },
 
         // Add Follows relationship between Person and Repository nodes
@@ -144,13 +167,19 @@ module.exports = function(app, config) {
 
         },
 
+        // Remove Follows relationship between Person and Repository nodes
         removeFollower: function(req, res, callback) {
         
             var repo_id   = req.params.repo_id;
             var person_id = req.params.person_id;
 
-            res.write("Remove Follower from Repository");
-            res.end();
+            neo_session.run(" START p=node(*) MATCH (p)-[rel:FOLLOWS]->(n) WHERE ID(p)=" + person_id + " AND ID(n)=" + repo_id +
+                " DELETE rel")
+            .then( function(result) {
+ 
+                res.setHeader('Content-Type', 'application/json');
+                res.send( JSON.stringify(result, 0, 4) );
+            });
         },
 
         addDataNode: function(req, res, callback) {
