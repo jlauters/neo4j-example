@@ -1,4 +1,5 @@
 var neo4j = require('neo4j-driver').v1;
+var querystring = require('querystring');
 
 var driver = neo4j.driver("bolt://localhost", neo4j.auth.basic("neo4j", "redpill"));
 var neo_session = driver.session();
@@ -33,8 +34,22 @@ module.exports = function(app, config) {
         },
 
         add: function(req, res, callback) {
-            res.write("Add Person node");
-            res.end();
+
+            var name          = querystring.escape( req.query.name );
+            var user_location = querystring.escape( req.query.user_location );
+            var email         = querystring.escape( req.query.email );
+            var url           = querystring.escape( req.query.url );
+            var tagline       = querystring.escape( req.query.tagline );
+            var preferences   = querystring.escape( req.query.preferences );
+
+            neo_session.run(" CREATE (p:Person {name: '" + name + "', user_location: '" + user_location + "', email: '" + email + "', url: '" + url
+                + "', tagline: '" + tagline + "', preferences: '" + preferences + "'")
+            .then( function(result) {
+       
+                res.setHeader('Content-Type', 'application/json');
+                res.send( JSON.stringify(result, 0, 4) );
+            });
+
         },
 
         edit: function(req, res, callback) {
@@ -49,16 +64,25 @@ module.exports = function(app, config) {
        
             var person_id = req.params.person_id;
 
-            res.write("Delete Person node");
-            res.end();
+            neo_session.run(" MATCH (p:Person) WHERE ID(p)=" + person_id + " OPTIONAL MATCH (p)-[r]-() DELETE r,p")
+            .then( function(result) {
+            
+                res.setHeader('Content-Type', 'application/json');
+                res.send( JSON.stringify(result, 0, 4) );
+            });
         },
 
+        // Get Repositories Owned, Followed, Collaborated with
         getRepositories: function(req, res, callback) {
         
             var person_id = req.params.person_id;
 
-            res.write("Get Repositories for person");
-            res.end();
+            neo_session.run(" MATCH (n)<-[:OWNS|FOLLOWS|COLLABORATES_WITH]-(p) WHERE ID(p)=" + person_id + " RETURN n")
+            .then( function(result) {
+
+                res.setHeader('Content-Type', 'application/json');
+                res.send( JSON.stringify(result, 0, 4) );
+            });
         },
 
         setPassword: function(req, res, callback) {

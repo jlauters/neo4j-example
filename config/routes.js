@@ -1,6 +1,6 @@
 module.exports = function(app, config) {
 
-    // controllers - tbd
+    // controllers
     var home   = require('../controllers/home')(app, config);
     //var data   = require('../controllers/data')(app, config);
     var people = require('../controllers/people')(app, config);
@@ -24,10 +24,19 @@ module.exports = function(app, config) {
     app.get('/organizations/', orgs.list);
     app.post('/organizations/add', orgs.add);
     app.get('/organizations/edit/:org_id', orgs.edit);
-    app.get('/organizations/delete/:org_id', orgs.deleteOrg);
+    app.post('/organizations/delete/:org_id', orgs.deleteOrg);
     app.get('/organizations/get_repositories/:org_id', orgs.getRepositories);
-    app.get('/organizations/add_person/:org_id/:person_id', orgs.addPerson);
-    app.get('/organizations/remove_person/:org_id/:person_id', orgs.removePerson);
+    app.post('/organizations/add_person/:org_id/:person_id', orgs.addPerson);
+    app.post('/organizations/remove_person/:org_id/:person_id', orgs.removePerson);
+    app.post('/organizations/add_owner/:org_id/:person_id', orgs.addOwner);
+    app.get('/organizatons/get_owner/:org_id', orgs.getOwner);
+    app.post('/organizations/remove_owner/:org_id/:person_id', orgs.removeOwner);
+    app.post('/organizations/add_manager/:org_id/:person_id', orgs.addManager);
+    app.get('/organizations/get_managers/:org_id', orgs.getManagers);
+    app.post('/organizations/remove_manager/:org_id/:person_id', orgs.removeManager);
+    app.post('/organizations/add_follower/:org_id/:person_id', orgs.addFollower);
+    app.get('/organizations/get_followers/:org_id', orgs.getFollowers);
+    app.post('/organizations/remove_follower/:org_id/:person_id', orgs.removeFollower);
     app.get('/organizations/get_people/:org_id', orgs.getPeople);
 
     // Repositories

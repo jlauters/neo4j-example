@@ -13,7 +13,6 @@ module.exports = function(app, config) {
         list: function(req, res, callback) {
 
             neo_session.run(" MATCH (n:Repository) RETURN n LIMIT 25").then( function(result) {
-                console.log(" Data Loaded! ");
 
                 var repos = Array();
                 for(idx in result.records) {
